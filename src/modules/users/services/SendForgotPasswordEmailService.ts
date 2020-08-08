@@ -26,7 +26,7 @@ class SendForgotPasswordEmailService {
     private userTokensRepository: IUserTokensRepository
   ) {}
 
-  public async execute({ email, body }: Request): Promise<void> {
+  public async execute({ email }: Request): Promise<void> {
     const user = await this.usersRepository.findByEmail(email);
 
     if (!user) {
@@ -35,10 +35,20 @@ class SendForgotPasswordEmailService {
 
     const userToken = await this.userTokensRepository.generate(user.id);
 
-    await this.mailProvider.sendMail(
-      email,
-      `Pedido de recuperação de senha: ${userToken.token}`
-    );
+    await this.mailProvider.sendMail({
+      to: {
+        name: user.name,
+        email: user.email,
+      },
+      subject: "[GoBarber] Recuperação de senha",
+      templateData: {
+        template: "Olá, {{name}}: {{token}}",
+        variables: {
+          name: user.name,
+          token: userToken.token,
+        },
+      },
+    });
   }
 }
 export default SendForgotPasswordEmailService;
