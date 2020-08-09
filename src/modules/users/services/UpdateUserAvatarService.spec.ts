@@ -19,6 +19,7 @@ describe("UpdateUserAvatar", () => {
       fakeStorageProvider
     );
   });
+
   it("should be able to update avatar", async () => {
     const user = await fakeAUsersRepository.create({
       name: "Willian Emboava",
